@@ -1,5 +1,5 @@
 """Flashcard class for the flashcard app."""
-from PySide6.QtWidgets import QLabel, QWidget, QHBoxLayout, QPushButton, QSizePolicy
+from PySide6.QtWidgets import QLabel, QWidget, QHBoxLayout, QGridLayout, QPushButton, QSizePolicy, QFrame
 from PySide6.QtCore import Qt
 
 
@@ -63,55 +63,69 @@ class CardHandler(QWidget):
         self.prev_button.setEnabled(True)
 
 
-class FlashCard(QLabel):
+class FlashCard(QFrame):
     """A flashcard widget."""
     def __init__(self, front_text="Front", back_text="Back", current_side="front"):
         super().__init__()
 
+        self.setObjectName("Flashcard")
         self.setStatusTip("Flip the card")
 
         # set the properties of the flashcard
         self.default_style = None
-        self.setAlignment(Qt.AlignCenter)
         self.setMinimumSize(480, 360)
-        self.setWordWrap(True)
+
+        # create the label
+        self.label = QLabel()
+        self.label.setWordWrap(True)
+        self.label.setAttribute(Qt.WA_TransparentForMouseEvents)  # ignore mouse clicks on the label
 
         # set the text
         self.front_text = front_text
         self.back_text = back_text
         self.current_side = current_side
         if self.current_side == "front":
-            self.setText(front_text)
+            self.label.setText(front_text)
         else:
-            self.setText(back_text)
+            self.label.setText(back_text)
+        
+        # set the layout
+        layout = QGridLayout()
+        layout.setColumnStretch(0, 1)
+        layout.setRowStretch(0, 1)
+        layout.addWidget(self.label, 1, 1)
+        layout.setColumnStretch(2, 1)
+        layout.setRowStretch(2, 1)
+
+        self.setLayout(layout)
+
     
     def set_front_text(self, text):
         """Set the front text of the card."""
         self.front_text = text
         if self.current_side == "front":
-            self.setText(self.front_text)
+            self.label.setText(self.front_text)
     
     def set_back_text(self, text):
         """Set the back text of the card."""
         self.back_text = text
         if self.current_side == "back":
-            self.setText(self.back_text)
+            self.label.setText(self.back_text)
 
     def mousePressEvent(self, event):
         """Change the color of the card when the mouse is pressed."""
+        event.accept()
         self.default_style = self.styleSheet()
         self.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,\
-                                                                stop: 0 #303030, stop: 1 #606060);\
-                            color: #909090;")
-        return super().mousePressEvent(event)
+                                                                stop: 0 #303030, stop: 1 #606060);")
+        self.label.setStyleSheet("background-color: rgba(255,255,255,0);")
 
     def mouseReleaseEvent(self, event):
         """Flip the card when the mouse is released."""
         self.setStyleSheet(self.default_style)
         if self.current_side == "front":
-            self.setText(self.back_text)
+            self.label.setText(self.back_text)
             self.current_side = "back"
         else:
-            self.setText(self.front_text)
+            self.label.setText(self.front_text)
             self.current_side = "front"
-        return super().mouseReleaseEvent(event)
