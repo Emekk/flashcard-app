@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt
 
 
 class CardHandler(QWidget):
+    """A widget that handles the flashcards."""
     def __init__(self, cards=None, current_index=0):
         super().__init__()
         
@@ -39,6 +40,7 @@ class CardHandler(QWidget):
         self.setLayout(layout)
     
     def prev_button_clicked(self):
+        """Go to the previous card."""
         self.flashcard.current_side = "front"
         self.current_index -= 1
         self.flashcard.set_front_text(self.cards[self.current_index][0])
@@ -50,6 +52,7 @@ class CardHandler(QWidget):
 
 
     def next_button_clicked(self):
+        """Go to the next card."""
         self.flashcard.current_side = "front"
         self.current_index += 1
         self.flashcard.set_front_text(self.cards[self.current_index][0])
@@ -61,12 +64,14 @@ class CardHandler(QWidget):
 
 
 class FlashCard(QLabel):
+    """A flashcard widget."""
     def __init__(self, front_text="Front", back_text="Back", current_side="front"):
         super().__init__()
 
         self.setStatusTip("Flip the card")
 
         # set the properties of the flashcard
+        self.default_style = None
         self.setAlignment(Qt.AlignCenter)
         self.setMinimumSize(480, 360)
         self.setWordWrap(True)
@@ -81,23 +86,28 @@ class FlashCard(QLabel):
             self.setText(back_text)
     
     def set_front_text(self, text):
+        """Set the front text of the card."""
         self.front_text = text
         if self.current_side == "front":
             self.setText(self.front_text)
     
     def set_back_text(self, text):
+        """Set the back text of the card."""
         self.back_text = text
         if self.current_side == "back":
             self.setText(self.back_text)
 
     def mousePressEvent(self, event):
-        self.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 0.8, y2: 1,\
-                                                                stop: 0 #404040, stop: 1 #606060);\
+        """Change the color of the card when the mouse is pressed."""
+        self.default_style = self.styleSheet()
+        self.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,\
+                                                                stop: 0 #303030, stop: 1 #606060);\
                             color: #909090;")
         return super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
-        self.setStyleSheet("background-color: #606060;")
+        """Flip the card when the mouse is released."""
+        self.setStyleSheet(self.default_style)
         if self.current_side == "front":
             self.setText(self.back_text)
             self.current_side = "back"
