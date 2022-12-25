@@ -1,0 +1,39 @@
+QLabel {
+    background-color: #505050;
+    color: #FFFFFF;
+    font: 12pt "Garamond";
+    border: 1px solid #FFFFFF;
+}
+
+QLabel:hover {
+    border: 2px solid #FFFFFF;
+}
+
+QPushButton {
+    color: #FFFFFF;
+    font-size: 24pt;
+    padding: 20px;
+    font-weight: bold;
+    background-color: #505050;
+}
+
+QPushButton:disabled {
+    color: #808080;
+    background-color: #303030;
+}
+
+QTextEdit {
+    background-color: #303030;
+    color: #FFFFFF;
+    font: 12pt "Calibri";
+}
+
+QToolButton {
+    font-weight: bold;
+    font-size: 16pt;
+    border: none;
+}
+
+QMainWindow {
+    background-color: #202020;
+}
